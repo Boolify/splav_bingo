@@ -87,23 +87,6 @@
         }
         .bingo-cell.pop { animation: pop 0.25s ease; }
 
-        .reset-btn {
-            margin-top: 24px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: all 0.3s;
-        }
-
-        .reset-btn:hover {
-            border-color: rgba(255, 107, 107, 0.5);
-            color: #ff6b6b;
-        }
-
         @media (max-width: 450px) {
             .bingo-board { gap: 4px; }
             .bingo-cell { font-size: 0.55rem; padding: 4px; border-radius: 6px; }
@@ -112,11 +95,10 @@
 </head>
 <body>
     <div class="bingo-board" id="board"></div>
-    <button class="reset-btn" id="resetBtn">Сбросить</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDr3pRafzwRUoNzf7wAHgbS9X5Uthg69fc",
@@ -135,34 +117,33 @@
 
         const bingoData = [
             "Утопили весло",
-            "\"Я же говорила\" — Катя Г.",
+            "«Я же говорила» — Катя Г.",
             "Пошёл дождь",
             "Уплыли без ремки",
             "Перенос палаток в ночи",
             "Неправильно заварили кофе",
             "Упустили туристов, уплывших далеко вперёд",
-            "Сходили в баню ✨",
             "Остались без еды и воды на сплаве",
-            "Повредили байдарки",
+            "Не хватает чего-то из снаряги",
             "Не поставили кипятиться воду",
             "Уплыл тапок",
             "Ничего не успеваем",
+            "Сходили в баню ✨",
             "Выбесили туристы",
             "Не можем растопить баню",
             "Забыли что-то на перекус",
             "Проспали подъём",
             "Проплавилась баня",
-            "\"Вы опять меня не слушали\" — Катя Г.",
+            "«Вы опять меня не слушали» — Катя Г.",
             "Упали с дерева",
             "Стол раздачи грязный и чего-то не хватает",
             "Делать что-то по лагерю ночью",
             "Неправильно поставили звезду",
             "Сидели с туристами до 3–4 утра",
-            "Влад и Илья задолбали"
+            "Повредили байдарки"
         ];
 
         const board = document.getElementById('board');
-        const resetBtn = document.getElementById('resetBtn');
         let cellStates = {};
 
         function createBoard() {
@@ -200,12 +181,6 @@
                 }
             }
         }
-
-        resetBtn.addEventListener('click', () => {
-            if (confirm('Сбросить все отметки?')) {
-                remove(bingoRef);
-            }
-        });
 
         onValue(bingoRef, (snapshot) => updateUI(snapshot.val()));
         createBoard();
