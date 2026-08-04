@@ -3,240 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎉 Бинго!</title>
+    <title>Сап/Байдарка Бинго</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(160deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            color: #fff;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
-            to { text-shadow: 0 0 30px rgba(94, 196, 255, 0.6); }
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            color: #aaa;
-            margin-bottom: 30px;
+            padding: 16px;
+            color: #e0f7fa;
         }
 
         .bingo-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            max-width: 500px;
+            gap: 6px;
+            max-width: 420px;
             width: 100%;
-            margin-bottom: 30px;
         }
 
         .bingo-cell {
             aspect-ratio: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 0.75rem;
-            padding: 8px;
+            font-size: 0.65rem;
+            line-height: 1.2;
+            padding: 6px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
             user-select: none;
-            position: relative;
-            overflow: hidden;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .bingo-cell:hover {
-            border-color: rgba(94, 196, 255, 0.5);
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(76, 201, 240, 0.4);
         }
 
         .bingo-cell.checked {
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
-            border-color: #00b4d8;
-            box-shadow: 0 0 20px rgba(0, 180, 216, 0.4);
-            transform: scale(1);
-        }
-
-        .bingo-cell.checked::after {
-            content: '✓';
-            position: absolute;
-            top: 4px;
-            right: 6px;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(76, 201, 240, 0.25);
+            border-color: #4cc9f0;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(76, 201, 240, 0.2);
         }
 
         .bingo-cell.free {
-            background: linear-gradient(135deg, #f72585, #b5179e);
-            border-color: #f72585;
-            font-weight: bold;
-            box-shadow: 0 0 20px rgba(247, 37, 133, 0.4);
+            background: rgba(247, 37, 133, 0.15);
+            border-color: rgba(247, 37, 133, 0.4);
+            color: #ff8fab;
+            font-weight: 600;
+            font-size: 0.8rem;
         }
 
         .bingo-cell.free.checked {
-            background: linear-gradient(135deg, #f72585, #b5179e);
+            background: rgba(247, 37, 133, 0.3);
+            box-shadow: 0 0 15px rgba(247, 37, 133, 0.3);
         }
 
         @keyframes pop {
             0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.08); }
             100% { transform: scale(1); }
         }
-
-        .bingo-cell.pop {
-            animation: pop 0.3s ease;
-        }
-
-        .stats {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px 25px;
-            text-align: center;
-        }
-
-        .stat-box .number {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #5ec6ff;
-        }
-
-        .stat-box .label {
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 4px;
-        }
+        .bingo-cell.pop { animation: pop 0.25s ease; }
 
         .reset-btn {
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #aaa;
-            padding: 10px 20px;
-            border-radius: 8px;
+            margin-top: 24px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             transition: all 0.3s;
         }
 
         .reset-btn:hover {
-            background: rgba(255, 50, 50, 0.1);
-            border-color: rgba(255, 50, 50, 0.5);
+            border-color: rgba(255, 107, 107, 0.5);
             color: #ff6b6b;
         }
 
         .bingo-win {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1000;
         }
 
         .confetti {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 8px; height: 8px;
             border-radius: 2px;
             animation: fall 3s linear forwards;
         }
 
         @keyframes fall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
 
-        .status {
-            margin-top: 15px;
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .status.connected {
-            color: #4ecdc4;
-        }
-
-        .status.error {
-            color: #ff6b6b;
-        }
-
-        @media (max-width: 500px) {
-            .bingo-board {
-                gap: 5px;
-            }
-            .bingo-cell {
-                font-size: 0.6rem;
-                padding: 5px;
-                border-radius: 8px;
-            }
-            h1 {
-                font-size: 1.8rem;
-            }
+        @media (max-width: 450px) {
+            .bingo-board { gap: 4px; }
+            .bingo-cell { font-size: 0.55rem; padding: 4px; border-radius: 6px; }
         }
     </style>
 </head>
 <body>
-    <h1>🎉 БИНГО!</h1>
-    <p class="subtitle">Нажимай на клетки — отметки видны всем!</p>
-
     <div class="bingo-board" id="board"></div>
-
-    <div class="stats">
-        <div class="stat-box">
-            <div class="number" id="checkedCount">0</div>
-            <div class="label">Отмечено</div>
-        </div>
-        <div class="stat-box">
-            <div class="number" id="totalCount">25</div>
-            <div class="label">Всего</div>
-        </div>
-    </div>
-
-    <div class="status" id="status">Подключение...</div>
-
-    <button class="reset-btn" id="resetBtn">🗑️ Сбросить всё</button>
-
+    <button class="reset-btn" id="resetBtn">Сбросить</button>
     <div class="bingo-win" id="confettiContainer"></div>
 
-    <!-- Firebase SDK и код приложения -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
 
-        // Твой Firebase конфиг
         const firebaseConfig = {
             apiKey: "AIzaSyDr3pRafzwRUoNzf7wAHgbS9X5Uthg69fc",
             authDomain: "test-cdfe4.firebaseapp.com",
@@ -248,29 +138,23 @@
             measurementId: "G-PR0K3S3S06"
         };
 
-        // Инициализация Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const bingoRef = ref(db, 'bingo_cells');
 
-        // Данные бинго — можешь менять текст!
         const bingoData = [
-            "Пришёл вовремя", "Выпил кофе", "Посмеялся", "Помог кому-то", "Узнал новое",
-            "Пообщался с другом", "Сделал фото", "Нашёл монетку", "Увидел радугу", "Опоздал",
-            "Съел вкусное", "ПОДАРОК", "Забыл пароль", "Улыбнулся", "Послушал музыку",
-            "Погулял", "Посмотрел фильм", "Побежал", "Позвонил маме", "Купил что-то",
-            "Заснул рано", "Почитал книгу", "Потанцевал", "Загадал желание", "Сделал добро"
+            "Перевернулся", "Потерял весло", "Фото заката", "Встретил уток", "Надел спасжилет",
+            "Пил из бутылки", "Грёб против течения", "Удар веслом о камень", "Попал под дождь", "Залил телефон",
+            "Увидел рыбу", "Селфи на сапе", "FREE 🏕️", "Потерял обувь", "Помог новичку",
+            "Красивый привал", "Ел на воде", "Стоял на коленях", "Полная тишина", "Проплыл под мостом",
+            "Обгорел на солнце", "Потерял заглушку весла", "Заметил бобра", "Финиш маршрута", "Хочу ещё раз"
         ];
 
         const board = document.getElementById('board');
-        const checkedCountEl = document.getElementById('checkedCount');
-        const statusEl = document.getElementById('status');
         const resetBtn = document.getElementById('resetBtn');
         const confettiContainer = document.getElementById('confettiContainer');
-
         let cellStates = {};
 
-        // Создание доски
         function createBoard() {
             board.innerHTML = '';
             for (let i = 0; i < 25; i++) {
@@ -289,117 +173,64 @@
             }
         }
 
-        // Переключение клетки
         function toggleCell(index) {
-            if (index === 12) return; // FREE клетка
-
+            if (index === 12) return;
             const newState = !cellStates[index];
             cellStates[index] = newState;
-
-            // Обновляем в Firebase
             set(ref(db, `bingo_cells/${index}`), newState);
-
-            // Анимация
+            
             const cell = board.children[index];
             cell.classList.add('pop');
-            setTimeout(() => cell.classList.remove('pop'), 300);
+            setTimeout(() => cell.classList.remove('pop'), 250);
         }
 
-        // Обновление UI из Firebase
         function updateUI(data) {
             const cells = board.querySelectorAll('.bingo-cell');
-
             for (let i = 0; i < 25; i++) {
                 if (i === 12) continue;
                 const isChecked = data && data[i.toString()] === true;
                 cellStates[i] = isChecked;
-
-                if (isChecked) {
-                    cells[i].classList.add('checked');
-                } else {
-                    cells[i].classList.remove('checked');
-                }
+                isChecked ? cells[i].classList.add('checked') : cells[i].classList.remove('checked');
             }
-
-            // Подсчёт
-            const count = Object.values(cellStates).filter(v => v).length;
-            checkedCountEl.textContent = count;
-
-            // Проверка на БИНГО!
             checkBingo();
         }
 
-        // Проверка выигрыша (линия, столбец, диагональ)
         function checkBingo() {
-            const grid = [];
-            for (let i = 0; i < 25; i++) {
-                grid.push(cellStates[i] || false);
-            }
-
+            const grid = Array.from({length: 25}, (_, i) => cellStates[i] || false);
             let won = false;
 
-            // Строки
             for (let r = 0; r < 5; r++) {
-                if (grid[r*5] && grid[r*5+1] && grid[r*5+2] && grid[r*5+3] && grid[r*5+4]) {
-                    won = true;
-                }
+                if (grid[r*5] && grid[r*5+1] && grid[r*5+2] && grid[r*5+3] && grid[r*5+4]) won = true;
             }
-            // Столбцы
             for (let c = 0; c < 5; c++) {
-                if (grid[c] && grid[c+5] && grid[c+10] && grid[c+15] && grid[c+20]) {
-                    won = true;
-                }
+                if (grid[c] && grid[c+5] && grid[c+10] && grid[c+15] && grid[c+20]) won = true;
             }
-            // Диагонали
             if (grid[0] && grid[6] && grid[12] && grid[18] && grid[24]) won = true;
             if (grid[4] && grid[8] && grid[12] && grid[16] && grid[20]) won = true;
 
-            if (won) {
-                launchConfetti();
-            }
+            if (won) launchConfetti();
         }
 
-        // Конфетти!
         function launchConfetti() {
-            const colors = ['#f72585', '#b5179e', '#7209b7', '#560bad', '#480ca8',
-                           '#3a0ca3', '#3f37c9', '#4361ee', '#4895ef', '#4cc9f0',
-                           '#ffd700', '#ff6b6b', '#51cf66', '#339af0'];
-
-            for (let i = 0; i < 80; i++) {
+            const colors = ['#4cc9f0', '#4895ef', '#4361ee', '#f72585', '#ffd700', '#51cf66'];
+            for (let i = 0; i < 60; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
                     confetti.className = 'confetti';
                     confetti.style.left = Math.random() * 100 + '%';
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                     confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-                    confetti.style.width = (5 + Math.random() * 10) + 'px';
-                    confetti.style.height = (5 + Math.random() * 10) + 'px';
                     confettiContainer.appendChild(confetti);
-
                     setTimeout(() => confetti.remove(), 4000);
-                }, i * 30);
+                }, i * 25);
             }
         }
 
-        // Сброс
         resetBtn.addEventListener('click', () => {
-            if (confirm('Точно сбросить все отметки? Это для всех!')) {
-                remove(bingoRef);
-            }
+            if (confirm('Сбросить все отметки?')) remove(bingoRef);
         });
 
-        // Слушаем изменения в Firebase в реальном времени
-        onValue(bingoRef, (snapshot) => {
-            const data = snapshot.val();
-            updateUI(data);
-            statusEl.textContent = '🟢 Подключено — все видят одни отметки';
-            statusEl.className = 'status connected';
-        }, (error) => {
-            statusEl.textContent = '🔴 Ошибка: ' + error.message;
-            statusEl.className = 'status error';
-        });
-
-        // Инициализация
+        onValue(bingoRef, (snapshot) => updateUI(snapshot.val()));
         createBoard();
     </script>
 </body>
