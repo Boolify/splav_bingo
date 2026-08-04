@@ -28,6 +28,7 @@
         }
 
         .bingo-cell {
+            position: relative;
             aspect-ratio: 1;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -51,23 +52,24 @@
         }
 
         .bingo-cell.checked {
-            background: rgba(76, 201, 240, 0.25);
-            border-color: #4cc9f0;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(76, 201, 240, 0.2);
+            background: rgba(255, 42, 42, 0.08);
+            border-color: rgba(255, 42, 42, 0.3);
         }
 
-        .bingo-cell.free {
-            background: rgba(247, 37, 133, 0.15);
-            border-color: rgba(247, 37, 133, 0.4);
-            color: #ff8fab;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .bingo-cell.free.checked {
-            background: rgba(247, 37, 133, 0.3);
-            box-shadow: 0 0 15px rgba(247, 37, 133, 0.3);
+        /* Красный крест поверх текста */
+        .bingo-cell.checked::after {
+            content: '✕';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem;
+            color: #ff2a2a;
+            font-weight: 900;
+            pointer-events: none;
+            text-shadow: 0 0 12px rgba(255, 42, 42, 0.5);
+            z-index: 5;
+            line-height: 1;
         }
 
         @keyframes pop {
@@ -94,34 +96,16 @@
             color: #ff6b6b;
         }
 
-        .bingo-win {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 1000;
-        }
-
-        .confetti {
-            position: absolute;
-            width: 8px; height: 8px;
-            border-radius: 2px;
-            animation: fall 3s linear forwards;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
         @media (max-width: 450px) {
             .bingo-board { gap: 4px; }
             .bingo-cell { font-size: 0.55rem; padding: 4px; border-radius: 6px; }
+            .bingo-cell.checked::after { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
     <div class="bingo-board" id="board"></div>
     <button class="reset-btn" id="resetBtn">Сбросить</button>
-    <div class="bingo-win" id="confettiContainer"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
@@ -145,14 +129,13 @@
         const bingoData = [
             "Перевернулся", "Потерял весло", "Фото заката", "Встретил уток", "Надел спасжилет",
             "Пил из бутылки", "Грёб против течения", "Удар веслом о камень", "Попал под дождь", "Залил телефон",
-            "Увидел рыбу", "Селфи на сапе", "FREE 🏕️", "Потерял обувь", "Помог новичку",
+            "Увидел рыбу", "Селфи на сапе", "БИНГО", "Потерял обувь", "Помог новичку",
             "Красивый привал", "Ел на воде", "Стоял на коленях", "Полная тишина", "Проплыл под мостом",
-            "Обгорел на солнце", "Потерял заглушку весла", "Заметил бобра", "Финиш маршрута", "Хочу ещё раз"
+            "Обгорел на солнце", "Потерял заглушку", "Заметил бобра", "Финиш маршрута", "Хочу ещё раз"
         ];
 
         const board = document.getElementById('board');
         const resetBtn = document.getElementById('resetBtn');
-        const confettiContainer = document.getElementById('confettiContainer');
         let cellStates = {};
 
         function createBoard() {
@@ -162,11 +145,9 @@
                 cell.className = 'bingo-cell';
                 cell.dataset.index = i;
                 cell.textContent = bingoData[i];
-
-                if (i === 12) {
-                    cell.classList.add('free', 'checked');
-                    cellStates[i] = true;
-                }
+                
+                // Все клетки изначально неактивны, включая центр
+                cellStates[i] = false;
 
                 cell.addEventListener('click', () => toggleCell(i));
                 board.appendChild(cell);
@@ -174,7 +155,6 @@
         }
 
         function toggleCell(index) {
-            if (index === 12) return;
             const newState = !cellStates[index];
             cellStates[index] = newState;
             set(ref(db, `bingo_cells/${index}`), newState);
@@ -187,47 +167,21 @@
         function updateUI(data) {
             const cells = board.querySelectorAll('.bingo-cell');
             for (let i = 0; i < 25; i++) {
-                if (i === 12) continue;
                 const isChecked = data && data[i.toString()] === true;
                 cellStates[i] = isChecked;
-                isChecked ? cells[i].classList.add('checked') : cells[i].classList.remove('checked');
-            }
-            checkBingo();
-        }
-
-        function checkBingo() {
-            const grid = Array.from({length: 25}, (_, i) => cellStates[i] || false);
-            let won = false;
-
-            for (let r = 0; r < 5; r++) {
-                if (grid[r*5] && grid[r*5+1] && grid[r*5+2] && grid[r*5+3] && grid[r*5+4]) won = true;
-            }
-            for (let c = 0; c < 5; c++) {
-                if (grid[c] && grid[c+5] && grid[c+10] && grid[c+15] && grid[c+20]) won = true;
-            }
-            if (grid[0] && grid[6] && grid[12] && grid[18] && grid[24]) won = true;
-            if (grid[4] && grid[8] && grid[12] && grid[16] && grid[20]) won = true;
-
-            if (won) launchConfetti();
-        }
-
-        function launchConfetti() {
-            const colors = ['#4cc9f0', '#4895ef', '#4361ee', '#f72585', '#ffd700', '#51cf66'];
-            for (let i = 0; i < 60; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
-                    confettiContainer.appendChild(confetti);
-                    setTimeout(() => confetti.remove(), 4000);
-                }, i * 25);
+                
+                if (isChecked) {
+                    cells[i].classList.add('checked');
+                } else {
+                    cells[i].classList.remove('checked');
+                }
             }
         }
 
         resetBtn.addEventListener('click', () => {
-            if (confirm('Сбросить все отметки?')) remove(bingoRef);
+            if (confirm('Сбросить все отметки?')) {
+                remove(bingoRef);
+            }
         });
 
         onValue(bingoRef, (snapshot) => updateUI(snapshot.val()));
