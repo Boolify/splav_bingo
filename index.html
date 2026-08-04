@@ -9,7 +9,6 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(160deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -17,6 +16,96 @@
             justify-content: center;
             padding: 16px;
             color: #e0f7fa;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0a1929 0%, #0d2137 50%, #1a3a52 100%);
+        }
+
+        /* Анимированные волны на фоне */
+        .waves {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            background-repeat: repeat-x;
+            opacity: 0.6;
+        }
+
+        .wave1 {
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(14, 116, 144, 0.3) 50%, 
+                rgba(6, 95, 124, 0.5) 100%);
+            animation: wave 18s linear infinite;
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,60 C150,90 350,30 600,60 C850,90 1050,30 1200,60 L1200,120 L0,120 Z' fill='%23000'/%3E%3C/svg%3E");
+            mask-size: 1200px 120px;
+            mask-position: bottom;
+        }
+
+        .wave2 {
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(76, 201, 240, 0.2) 50%, 
+                rgba(67, 97, 238, 0.4) 100%);
+            animation: wave 14s linear infinite reverse;
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,80 C200,50 400,110 600,80 C800,50 1000,110 1200,80 L1200,120 L0,120 Z' fill='%23000'/%3E%3C/svg%3E");
+            mask-size: 1200px 120px;
+            mask-position: bottom;
+            opacity: 0.4;
+        }
+
+        .wave3 {
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(67, 97, 238, 0.15) 50%, 
+                rgba(58, 12, 163, 0.3) 100%);
+            animation: wave 22s linear infinite;
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,40 C300,80 500,20 700,60 C900,100 1100,40 1200,70 L1200,120 L0,120 Z' fill='%23000'/%3E%3C/svg%3E");
+            mask-size: 1200px 120px;
+            mask-position: bottom;
+            opacity: 0.5;
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Переливающийся градиент поверх */
+        .shimmer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                transparent 0%,
+                rgba(76, 201, 240, 0.05) 25%,
+                rgba(67, 97, 238, 0.08) 50%,
+                rgba(76, 201, 240, 0.05) 75%,
+                transparent 100%
+            );
+            background-size: 400% 400%;
+            animation: shimmer 15s ease infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         .bingo-board {
@@ -25,6 +114,8 @@
             gap: 6px;
             max-width: 420px;
             width: 100%;
+            position: relative;
+            z-index: 10;
         }
 
         .bingo-cell {
@@ -37,13 +128,14 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             line-height: 1.2;
             padding: 6px;
             cursor: pointer;
             transition: all 0.25s ease;
             user-select: none;
             color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(2px);
         }
 
         .bingo-cell:hover {
@@ -56,7 +148,6 @@
             border-color: rgba(255, 42, 42, 0.3);
         }
 
-        /* Красный крест поверх текста */
         .bingo-cell.checked::after {
             content: '✕';
             position: absolute;
@@ -89,6 +180,9 @@
             cursor: pointer;
             font-size: 0.75rem;
             transition: all 0.3s;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(2px);
         }
 
         .reset-btn:hover {
@@ -98,12 +192,19 @@
 
         @media (max-width: 450px) {
             .bingo-board { gap: 4px; }
-            .bingo-cell { font-size: 0.55rem; padding: 4px; border-radius: 6px; }
+            .bingo-cell { font-size: 0.6rem; padding: 4px; border-radius: 6px; }
             .bingo-cell.checked::after { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
+    <div class="waves">
+        <div class="wave wave1"></div>
+        <div class="wave wave2"></div>
+        <div class="wave wave3"></div>
+    </div>
+    <div class="shimmer"></div>
+
     <div class="bingo-board" id="board"></div>
     <button class="reset-btn" id="resetBtn">Сбросить</button>
 
@@ -126,13 +227,7 @@
         const db = getDatabase(app);
         const bingoRef = ref(db, 'bingo_cells');
 
-        const bingoData = [
-            "Перевернулся", "Потерял весло", "Фото заката", "Встретил уток", "Надел спасжилет",
-            "Пил из бутылки", "Грёб против течения", "Удар веслом о камень", "Попал под дождь", "Залил телефон",
-            "Увидел рыбу", "Селфи на сапе", "БИНГО", "Потерял обувь", "Помог новичку",
-            "Красивый привал", "Ел на воде", "Стоял на коленях", "Полная тишина", "Проплыл под мостом",
-            "Обгорел на солнце", "Потерял заглушку", "Заметил бобра", "Финиш маршрута", "Хочу ещё раз"
-        ];
+        const bingoData = Array.from({length: 25}, (_, i) => `Клетка ${i + 1}`);
 
         const board = document.getElementById('board');
         const resetBtn = document.getElementById('resetBtn');
@@ -146,7 +241,6 @@
                 cell.dataset.index = i;
                 cell.textContent = bingoData[i];
                 
-                // Все клетки изначально неактивны, включая центр
                 cellStates[i] = false;
 
                 cell.addEventListener('click', () => toggleCell(i));
