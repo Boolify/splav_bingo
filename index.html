@@ -21,9 +21,9 @@
 
         .bingo-board {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 6px;
-            max-width: 420px;
+            max-width: 320px;
             width: 100%;
         }
 
@@ -37,9 +37,9 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             line-height: 1.15;
-            padding: 6px;
+            padding: 8px;
             cursor: pointer;
             transition: background 0.25s ease, border-color 0.25s ease;
             user-select: none;
@@ -56,7 +56,6 @@
             border-color: rgba(255, 42, 42, 0.2);
         }
 
-        /* Рукописный крестик — две тонкие линии */
         .bingo-cell.checked::before,
         .bingo-cell.checked::after {
             content: '';
@@ -88,8 +87,8 @@
         .bingo-cell.pop { animation: pop 0.25s ease; }
 
         @media (max-width: 450px) {
-            .bingo-board { gap: 4px; }
-            .bingo-cell { font-size: 0.55rem; padding: 4px; border-radius: 6px; }
+            .bingo-board { gap: 4px; max-width: 280px; }
+            .bingo-cell { font-size: 0.6rem; padding: 6px; border-radius: 6px; }
         }
     </style>
 </head>
@@ -140,7 +139,9 @@
             "Делать что-то по лагерю ночью",
             "Неправильно поставили звезду",
             "Сидели с туристами до 3–4 утра",
-            "Повредили байдарки"
+            "Повредили байдарки",
+            "Вика не ела весь день",
+            "Илья и Влад выбесили"
         ];
 
         const board = document.getElementById('board');
@@ -148,7 +149,7 @@
 
         function createBoard() {
             board.innerHTML = '';
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 27; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'bingo-cell';
                 cell.dataset.index = i;
@@ -171,7 +172,7 @@
 
         function updateUI(data) {
             const cells = board.querySelectorAll('.bingo-cell');
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 27; i++) {
                 const isChecked = data && data[i.toString()] === true;
                 cellStates[i] = isChecked;
                 if (isChecked) {
