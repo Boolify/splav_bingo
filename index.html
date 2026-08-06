@@ -21,9 +21,9 @@
 
         .bingo-board {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 6px;
-            max-width: 320px;
+            max-width: 480px;
             width: 100%;
         }
 
@@ -37,9 +37,9 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             line-height: 1.15;
-            padding: 8px;
+            padding: 6px;
             cursor: pointer;
             transition: background 0.25s ease, border-color 0.25s ease;
             user-select: none;
@@ -79,6 +79,17 @@
             transform: translate(-50%, -50%) rotate(-44deg);
         }
 
+        .bingo-cell.empty {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.05);
+            cursor: default;
+        }
+
+        .bingo-cell.empty:hover {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
         @keyframes pop {
             0% { transform: scale(1); }
             50% { transform: scale(1.06); }
@@ -86,9 +97,9 @@
         }
         .bingo-cell.pop { animation: pop 0.25s ease; }
 
-        @media (max-width: 450px) {
-            .bingo-board { gap: 4px; max-width: 280px; }
-            .bingo-cell { font-size: 0.6rem; padding: 6px; border-radius: 6px; }
+        @media (max-width: 500px) {
+            .bingo-board { gap: 4px; max-width: 360px; }
+            .bingo-cell { font-size: 0.5rem; padding: 4px; border-radius: 6px; }
         }
     </style>
 </head>
@@ -144,23 +155,38 @@
             "Илья и Влад выбесили"
         ];
 
+        // Позиции пустых клеток (индексы от 0 до 35)
+        const emptyPositions = [2, 7, 11, 16, 19, 24, 28, 31, 34];
+
         const board = document.getElementById('board');
         let cellStates = {};
 
         function createBoard() {
             board.innerHTML = '';
-            for (let i = 0; i < 27; i++) {
+            let textIndex = 0;
+            
+            for (let i = 0; i < 36; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'bingo-cell';
                 cell.dataset.index = i;
-                cell.textContent = bingoData[i];
-                cellStates[i] = false;
-                cell.addEventListener('click', () => toggleCell(i));
+                
+                if (emptyPositions.includes(i)) {
+                    cell.classList.add('empty');
+                    cellStates[i] = false;
+                } else {
+                    cell.textContent = bingoData[textIndex];
+                    textIndex++;
+                    cellStates[i] = false;
+                    cell.addEventListener('click', () => toggleCell(i));
+                }
+                
                 board.appendChild(cell);
             }
         }
 
         function toggleCell(index) {
+            if (emptyPositions.includes(index)) return;
+            
             const newState = !cellStates[index];
             cellStates[index] = newState;
             set(ref(db, `bingo_cells/${index}`), newState);
@@ -172,7 +198,9 @@
 
         function updateUI(data) {
             const cells = board.querySelectorAll('.bingo-cell');
-            for (let i = 0; i < 27; i++) {
+            for (let i = 0; i < 36; i++) {
+                if (emptyPositions.includes(i)) continue;
+                
                 const isChecked = data && data[i.toString()] === true;
                 cellStates[i] = isChecked;
                 if (isChecked) {
