@@ -155,8 +155,8 @@
             "Илья и Влад выбесили"
         ];
 
-        // Пустые клетки по границе (углы и середины сторон)
-        const emptyPositions = [0, 2, 5, 11, 17, 24, 30, 33, 35];
+        // Пустые клетки подряд по границе (верхний ряд + правый столбец)
+        const emptyPositions = [0, 1, 2, 3, 4, 5, 11, 17, 23];
 
         const board = document.getElementById('board');
         let cellStates = {};
